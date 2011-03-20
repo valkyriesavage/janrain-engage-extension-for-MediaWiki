@@ -1,0 +1,12 @@
+JanrainEngage (http://www.janrain.com/products/engage) is an SSO utility.
+Hooking it into a MediaWiki extension, it becomes possible to use Facebook,
+OpenID, Google, etc., to sign on in MediaWiki instances.
+
+To add this extension to MediaWiki, just add one line to the bottom of
+LocalSettings.php:
+
+require_once('extensions/JanrainEngage/JanrainEngage.php');
+
+and copy all these files into the extensions directory in a folder called
+JanrainEngage.  You will also need an API key for Janrain so that it will
+accept tokens from your website.  It is free to sign up!
