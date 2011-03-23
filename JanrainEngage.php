@@ -27,8 +27,6 @@ function addJanrainLoginLink(&$template) {
 }
 
 function createDBMapping(&$user, &$inject_html) {
-    $identifier = getIdentifierFromDB();
-    addIdAndUserToDB($identifier, $user->getName());
 
     return true;
 }

@@ -53,8 +53,8 @@ class JanrainEngageSpecial extends SpecialPage {
                         $identifier = $profile['identifier'];
     
                         //okay, what are our cases here?
-                        //first, is someone already logged in?
-                        if ($wgUser->isLoggedIn()) {
+                        //first, is someone already logged in? then they are trying to add
+                        if (!$wgUser->isAnon()) {
                             // best to make sure this is what they want to do
                             $wgOut->addWikiText("Is it okay to add this identifier to user ".$wgUser->getName()."?");
                             $wgOut->addWikiText("If not, you probably want to log out now and try again.");
@@ -65,22 +65,27 @@ class JanrainEngageSpecial extends SpecialPage {
                         else {
                             $username = usernameFromIdentifier($identifier);
 
-                            if ($username == '') {
+                            if (preg_match("/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/", $username)) {
+                                // the user did something wrong... let's send them through again
+                                // they still are logged in with an IP address
+                                $username = 'SPECIALIP';
+                            }
+
+                            if ($username == '' or $username == 'SPECIALIP') {
                                 // okay, they aren't in the DB.  what user should we be using here?
                                 $wgOut->addWikiText('You must attach this id to a user of this wiki:');
                                 $wgOut->addHTML("<a href='/index.php?title=Special:UserLogin&type=signup&returnto=Special:JanrainEngageSpecial'>Create a new user</a><br />");
-                                $wgOut->addHTML("<a href='/index.php?title=Special:UserLogin&nojanrain=true'>Log in an existing user</a>");
-                                addTempIdentifierToDB($identifier);
+                                $wgOut->addHTML("<a href='/index.php?title=Special:UserLogin&nojanrain=true&returnoto=Special:JanrainEngageSpecial'>Log in an existing user</a>");
+                                if ($username != 'SPECIALIP') {
+                                    addTempIdentifierToDB($identifier);
+                                }
                                 return;
                             }
                             else {
                                 //we know this user; let's set them up!
-                                $user = User::newFromName($username);
-                                $user->setID(User::idFromName($username));
-                                $user->loadFromDatabase();
-                                $wgUser = $user;
+                                $wgUser->setID(User::idFromName($username));
+                                $wgUser->loadFromDatabase();
 
-                                $wgOut->addWikiText("I see you have been here before...");
                                 $wgOut->addWikiText("Accounts currently linked to this user: ");
                                 listIdsForUser($wgUser->getName());
                                 $wgOut->addWikiText("Link another account:");
@@ -105,10 +110,15 @@ class JanrainEngageSpecial extends SpecialPage {
                         upgradeTempIdentifierInDB();
                     }
 
-                    $wgOut->addWikiText("Accounts currently linked to this user: ");
-                    listIdsForUser($wgUser->getName());
-                    $wgOut->addWikiText("Link another account:");
-                    $wgOut->addHTML('<iframe src="http://mediawiki.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fdev.groupaya.net%2Findex.php%3Ftitle%3DSpecial%3AJanrainEngageSpecial" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>');
+                    if (!$wgUser->isAnon()) {
+                        $wgOut->addWikiText("Accounts currently linked to this user: ");
+                        listIdsForUser($wgUser->getName());
+                        $wgOut->addWikiText("Link another account:");
+                        $wgOut->addHTML('<iframe src="http://mediawiki.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fdev.groupaya.net%2Findex.php%3Ftitle%3DSpecial%3AJanrainEngageSpecial" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>');
+                    }
+                    else {
+                        $wgOut->addWikiText("You must be logged in to use this page's functionality.");
+                    }
                 }
         }
 }

@@ -78,8 +78,10 @@ function getIdentifierFromDB() {
 
     $row = mysql_fetch_assoc($result);
     $j_time = $row['j_time'];
-    if (time() - $j_time > 90) {
+    if (time() - $j_time > 45) {
         $identifier = '';
+        global $wgOut;
+        $wgOut->addWikiText("Sorry, your JanrainEngage token expired after 45 seconds of inactivity.  Try again.");
     }
     else {
         $identifier = $row['j_identifier'];
@@ -98,6 +100,9 @@ function addTempIdentifierToDB($identifier) {
     global $tableName;
 
     init();
+
+    # we don't want them to have more than one
+    removeTempIdentifierFromDB();
 
     $ip = wfGetIP();
     
@@ -130,6 +135,7 @@ function upgradeTempIdentifierInDB() {
     $username = $wgUser->getName();
     $updateQuery = "UPDATE `$tableName` SET `j_username`='$username' WHERE `j_username`='$ip';";
     mysql_query($updateQuery);
+    global $wgOut;
 
     cleanup();
 }
