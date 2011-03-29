@@ -2,8 +2,8 @@
 
 class JanrainEngageSpecial extends SpecialPage {
         function __construct() {
-                parent::__construct( 'JanrainEngageSpecial' );
-                wfLoadExtensionMessages('JanrainEngageSpecial');
+                parent::__construct( 'JanrainEngage' );
+                wfLoadExtensionMessages('JanrainEngage');
         }
 
         function execute( $par ) {

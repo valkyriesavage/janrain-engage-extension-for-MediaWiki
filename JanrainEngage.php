@@ -1,4 +1,12 @@
 <?php
+
+if (!defined('MEDIAWIKI')) {
+        echo <<<EOT
+To install JanrainEngage, put the following line in LocalSettings.php:
+require_once( "\$IP/extensions/JanrainEngage/JanrainEngage.php" );
+EOT;
+        exit( 1 );
+}
  
 $wgExtensionCredits['other'][] = array(
   'name' => 'JanrainEngage',
@@ -40,6 +48,7 @@ function removeTempDBEntries(&$user) {
 $dir = dirname(__FILE__) . '/';
 
 $wgAutoloadClasses['JanrainEngageSpecial'] = $dir.'JanrainEngageSpecial.php';
-$wgExtensionMessagesFiles['JanrainEngageSpecial'] = $dir . 'JanrainEngageSpecial.i18n.php';
-$wgExtensionAliasesFiles['JanrainEngageSpecial'] = $dir . 'JanrainEngageSpecial.alias.php';
-$wgSpecialPages['JanrainEngageSpecial'] = 'JanrainEngageSpecial';
+$wgExtensionMessagesFiles['JanrainEngage'] = $dir . 'JanrainEngage.i18n.php';
+$wgExtensionAliasesFiles['JanrainEngage'] = $dir . 'JanrainEngage.alias.php';
+$wgSpecialPages['JanrainEngage'] = 'JanrainEngageSpecial';
+$wgSpecialPageGroups['JanrainEngage'] = 'other';
