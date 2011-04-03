@@ -73,7 +73,7 @@ function getIdentifierFromDB() {
     $result = mysql_query($findQuery);
 
     if (!$result) {
-        return 'HOLY CRAP WE ARE ALL GONNA DIE';
+        return 'Mysterious DB error';
     }
 
     $row = mysql_fetch_assoc($result);
@@ -99,10 +99,10 @@ function getIdentifierFromDB() {
 function addTempIdentifierToDB($identifier) {
     global $tableName;
 
-    init();
-
     # we don't want them to have more than one
     removeTempIdentifierFromDB();
+
+    init();
 
     $ip = wfGetIP();
     
@@ -140,6 +140,26 @@ function upgradeTempIdentifierInDB() {
     cleanup();
 }
 
+function getIdsForUser($username) {
+    global $tableName;
+
+    init();
+
+    $findQuery = "SELECT * FROM `$tableName` WHERE `j_username` = '$username';";
+    $result = mysql_query($findQuery);
+
+    $identifiers = array();
+
+    while ($row = mysql_fetch_assoc($result)) {
+        $identifiers[] = $row['j_identifier'];
+    }
+
+    mysql_free_result($result);
+
+    cleanup();
+
+    return $identifiers;
+}
 
 function listIdsForUser($username) {
     global $wgOut;
@@ -160,7 +180,7 @@ function listIdsForUser($username) {
     while ($row = mysql_fetch_assoc($result)) {
         $identifier = $row['j_identifier'];
         $id = $row['j_id'];
-        $wgOut->addHTML("<li>$identifier - <a href='/index.php?title=Special:JanrainEngageSpecial&unlink=$id'>Unlink</a></li>");
+        $wgOut->addHTML("<li>$identifier - <a href='/index.php?title=Special:JanrainEngage&unlink=$id'>Unlink</a></li>");
     }
     $wgOut->addHTML('</ul>');
                     

@@ -54,11 +54,11 @@ class JanrainEngageSpecial extends SpecialPage {
     
                         //okay, what are our cases here?
                         //first, is someone already logged in? then they are trying to add
-                        if (!$wgUser->isAnon()) {
+                        if (!$wgUser->isAnon() && !array_key_exists($identifier, getIdsForUser($wgUser->getName()))) {
                             // best to make sure this is what they want to do
                             $wgOut->addWikiText("Is it okay to add this identifier to user ".$wgUser->getName()."?");
                             $wgOut->addWikiText("If not, you probably want to log out now and try again.");
-                            $wgOut->addHTML("If so, <a href='/index.php?title=Special:JanrainEngageSpecial&confirm=true'>confirm here</a>.");
+                            $wgOut->addHTML("If so, <a href='/index.php?title=Special:JanrainEngage&confirm=true'>confirm here</a>.");
                             addTempIdentifierToDB($identifier);
                         }
                         //otherwise, we need to know if we remember them
@@ -74,8 +74,8 @@ class JanrainEngageSpecial extends SpecialPage {
                             if ($username == '' or $username == 'SPECIALIP') {
                                 // okay, they aren't in the DB.  what user should we be using here?
                                 $wgOut->addWikiText('You must attach this id to a user of this wiki:');
-                                $wgOut->addHTML("<a href='/index.php?title=Special:UserLogin&type=signup&returnto=Special:JanrainEngageSpecial'>Create a new user</a><br />");
-                                $wgOut->addHTML("<a href='/index.php?title=Special:UserLogin&nojanrain=true&returnoto=Special:JanrainEngageSpecial'>Log in an existing user</a>");
+                                $wgOut->addHTML("<a href='/index.php?title=Special:UserLogin&type=signup&returnto=Special:JanrainEngage'>Create a new user</a><br />");
+                                $wgOut->addHTML("<a href='/index.php?title=Special:UserLogin&nojanrain=true&returnoto=Special:JanrainEngage'>Log in an existing user</a>");
                                 if ($username != 'SPECIALIP') {
                                     addTempIdentifierToDB($identifier);
                                 }
@@ -89,7 +89,7 @@ class JanrainEngageSpecial extends SpecialPage {
                                 $wgOut->addWikiText("Accounts currently linked to this user: ");
                                 listIdsForUser($wgUser->getName());
                                 $wgOut->addWikiText("Link another account:");
-                                $wgOut->addHTML('<iframe src="http://mediawiki.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fdev.groupaya.net%2Findex.php%3Ftitle%3DSpecial%3AJanrainEngageSpecial" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>');
+                                $wgOut->addHTML('<iframe src="http://mediawiki.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fdev.groupaya.net%2Findex.php%3Ftitle%3DSpecial%3AJanrainEngage" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>');
                             }
                         }
 
@@ -114,7 +114,7 @@ class JanrainEngageSpecial extends SpecialPage {
                         $wgOut->addWikiText("Accounts currently linked to this user: ");
                         listIdsForUser($wgUser->getName());
                         $wgOut->addWikiText("Link another account:");
-                        $wgOut->addHTML('<iframe src="http://mediawiki.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fdev.groupaya.net%2Findex.php%3Ftitle%3DSpecial%3AJanrainEngageSpecial" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>');
+                        $wgOut->addHTML('<iframe src="http://mediawiki.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fdev.groupaya.net%2Findex.php%3Ftitle%3DSpecial%3AJanrainEngage" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>');
                     }
                     else {
                         $wgOut->addWikiText("You must be logged in to use this page's functionality.");

@@ -29,7 +29,7 @@ function addJanrainLoginLink(&$template) {
     }
 
     global $wgOut;
-    $wgOut->addHTML('<iframe src="http://mediawiki.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fdev.groupaya.net%2Findex.php%3Ftitle%3DSpecial%3AJanrainEngageSpecial" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>');
+    $wgOut->addHTML('<iframe src="http://mediawiki.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fdev.groupaya.net%2Findex.php%3Ftitle%3DSpecial%3AJanrainEngage" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>');
 
     return true;
 }
