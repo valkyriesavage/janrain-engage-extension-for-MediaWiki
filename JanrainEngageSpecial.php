@@ -8,19 +8,22 @@ class JanrainEngageSpecial extends SpecialPage {
 
         function execute( $par ) {
                 require_once('JanrainEngageDB.php');
+                require_once('JanrainEngageVars.php');
+
                 global $wgRequest, $wgOut, $wgUser;
  
                 $this->setHeaders();
                 $wgOut->setPageTitle("Special:JanrainEngage");
  
-                $rpx_api_key = 'e21e876daa79d816cb8f10cabbad27c71faa0766';
                 $token = $_POST['token'];
 
                 if(strlen($token) == 40) {//test the length of the token; it should be 40 characters
 
+                    global $wgJERpxApiKey;
+
                     //Use the token to make the auth_info API call
                     $post_data = array('token'  => $token,
-                        'apiKey' => $rpx_api_key,
+                        'apiKey' => $wgJERpxApiKey,
                         'format' => 'json',
                         'extended' => 'true'); //Extended is not available to Basic.
 
@@ -47,6 +50,19 @@ class JanrainEngageSpecial extends SpecialPage {
 
                     if ($auth_info['stat'] == 'ok') {
 
+                        global $wgArticlePath;
+                        $login = '';
+                        $special = '';
+                        $placeHolder = '$1';
+                        if ($wgArticlePath == '/index.php/$1') {
+                            $login = '/index.php?title=$1';
+                            $special = '/index.php/$1';
+                        }
+                        else {
+                            $login = $wgArticlePath;
+                            $special = $wgArticlePath;
+                        }
+
                         //Use the identifier as the unique key to sign the user into the system.
                         //Extract the needed variables from the response
                         $profile = $auth_info['profile'];
@@ -58,7 +74,7 @@ class JanrainEngageSpecial extends SpecialPage {
                             // best to make sure this is what they want to do
                             $wgOut->addWikiText("Is it okay to add this identifier to user ".$wgUser->getName()."?");
                             $wgOut->addWikiText("If not, you probably want to log out now and try again.");
-                            $wgOut->addHTML("If so, <a href='/index.php?title=Special:JanrainEngage&confirm=true'>confirm here</a>.");
+                            $wgOut->addHTML("If so, <a href='".str_replace($placeHolder, "Special:JanrainEngage&confirm=true", $special)."'>confirm here</a>.");
                             addTempIdentifierToDB($identifier);
                         }
                         //otherwise, we need to know if we remember them
@@ -73,9 +89,12 @@ class JanrainEngageSpecial extends SpecialPage {
 
                             if ($username == '' or $username == 'SPECIALIP') {
                                 // okay, they aren't in the DB.  what user should we be using here?
+                                $signupURL = str_replace($placeHolder, "Special:UserLogin&type=signup&returnto=Special:JanrainEngage", $login);
+                                $loginURL = str_replace($placeHolder, "Special:UserLogin&nojanrain=true&returnto=Special:JanrainEngage", $login);
+                               
                                 $wgOut->addWikiText('You must attach this id to a user of this wiki:');
-                                $wgOut->addHTML("<a href='/index.php?title=Special:UserLogin&type=signup&returnto=Special:JanrainEngage'>Create a new user</a><br />");
-                                $wgOut->addHTML("<a href='/index.php?title=Special:UserLogin&nojanrain=true&returnoto=Special:JanrainEngage'>Log in an existing user</a>");
+                                $wgOut->addHTML("<a href='$signupURL'>Create a new user</a><br />");
+                                $wgOut->addHTML("<a href='$loginURL'>Log in an existing user</a>");
                                 if ($username != 'SPECIALIP') {
                                     addTempIdentifierToDB($identifier);
                                 }
@@ -86,10 +105,11 @@ class JanrainEngageSpecial extends SpecialPage {
                                 $wgUser->setID(User::idFromName($username));
                                 $wgUser->loadFromDatabase();
 
+                                global $JEIframeHTML;
                                 $wgOut->addWikiText("Accounts currently linked to this user: ");
                                 listIdsForUser($wgUser->getName());
                                 $wgOut->addWikiText("Link another account:");
-                                $wgOut->addHTML('<iframe src="http://mediawiki.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fdev.groupaya.net%2Findex.php%3Ftitle%3DSpecial%3AJanrainEngage" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>');
+                                $wgOut->addHTML($JEIframeHTML);
                             }
                         }
 
@@ -98,7 +118,7 @@ class JanrainEngageSpecial extends SpecialPage {
                         $wgUser->saveSettings();
                     }
                     else {
-                        $wgOut->addWikiText("Nothing to see here, folks, just something broken...");
+                        $wgOut->addWikiText("Nothing to see here, folks.");
                     }
                 }
                 else {
@@ -111,10 +131,11 @@ class JanrainEngageSpecial extends SpecialPage {
                     }
 
                     if (!$wgUser->isAnon()) {
+                        global $JEIframeHTML;
                         $wgOut->addWikiText("Accounts currently linked to this user: ");
                         listIdsForUser($wgUser->getName());
                         $wgOut->addWikiText("Link another account:");
-                        $wgOut->addHTML('<iframe src="http://mediawiki.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fdev.groupaya.net%2Findex.php%3Ftitle%3DSpecial%3AJanrainEngage" scrolling="no" frameBorder="no" allowtransparency="true" style="width:400px;height:240px"></iframe>');
+                        $wgOut->addHTML($JEIframeHTML);
                     }
                     else {
                         $wgOut->addWikiText("You must be logged in to use this page's functionality.");
