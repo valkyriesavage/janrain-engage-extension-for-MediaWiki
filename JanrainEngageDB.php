@@ -177,10 +177,11 @@ function listIdsForUser($username) {
     }
     
     $wgOut->addHTML('<ul>');
+    global $JESpecialPageURL;
     while ($row = mysql_fetch_assoc($result)) {
         $identifier = $row['j_identifier'];
         $id = $row['j_id'];
-        $wgOut->addHTML("<li>$identifier - <a href='/index.php?title=Special:JanrainEngage&unlink=$id'>Unlink</a></li>");
+        $wgOut->addHTML("<li>$identifier - <a href='$JESpecialPageURL&unlink=$id'>Unlink</a></li>");
     }
     $wgOut->addHTML('</ul>');
                     

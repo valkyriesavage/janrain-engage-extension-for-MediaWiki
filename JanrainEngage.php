@@ -18,6 +18,7 @@ $wgExtensionCredits['other'][] = array(
 );
 
 $wgHooks['UserLoginForm'][] = 'addJanrainLoginLink';
+$wgHooks['UserLoginComplete'][] = 'addWarning';
 $wgHooks['UserLogout'][] = 'removeTempDBEntries';
 
 require_once('JanrainEngageDB.php');
@@ -29,6 +30,12 @@ function addJanrainLoginLink(&$template) {
     }
     global $wgOut, $JEIframeHTML;
     $wgOut->addHTML($JEIframeHTML);
+    return true;
+}
+
+function addWarning(&$user, &$inject_html) {
+    global $JESpecialPageURL;
+    $inject_html = "<a href=$JESpecialPageURL>Confirm JanrainEngage attachment</a>";
     return true;
 }
 

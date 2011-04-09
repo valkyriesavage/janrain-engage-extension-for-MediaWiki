@@ -132,6 +132,7 @@ class JanrainEngageSpecial extends SpecialPage {
 
                     if (!$wgUser->isAnon()) {
                         global $JEIframeHTML;
+                        upgradeTempIdentifierInDB();
                         $wgOut->addWikiText("Accounts currently linked to this user: ");
                         listIdsForUser($wgUser->getName());
                         $wgOut->addWikiText("Link another account:");
